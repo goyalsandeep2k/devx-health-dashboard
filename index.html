@@ -3,625 +3,545 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DevX Health & Outcome Metrics</title>
+<title>FY25 Elevate Operational Excellence — Intuit</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background: #ffffff; color: #111827; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#fff; color:#111827; }
 
-  /* ── Header ── */
-  .header {
-    background: linear-gradient(135deg, #0a2463 0%, #1565c0 60%, #1976d2 100%);
-    color: #fff;
-    padding: 22px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header-left h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; }
-  .header-left p { font-size: 13px; opacity: 0.75; margin-top: 3px; }
-  .header-right { display: flex; gap: 10px; align-items: center; }
-  .badge {
-    background: rgba(255,255,255,0.14);
-    border: 1px solid rgba(255,255,255,0.28);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .badge.green { background: rgba(46,125,50,0.55); border-color: rgba(76,175,80,0.6); }
+/* ── Header ── */
+.header { background:linear-gradient(135deg,#0a2463 0%,#1565c0 55%,#1976d2 100%); color:#fff; padding:22px 40px; display:flex; align-items:center; justify-content:space-between; }
+.header h1 { font-size:24px; font-weight:800; letter-spacing:-.3px; }
+.header p  { font-size:12px; opacity:.75; margin-top:3px; }
+.badge { background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28); border-radius:20px; padding:5px 14px; font-size:11.5px; font-weight:500; }
+.badge.green { background:rgba(46,125,50,.55); border-color:rgba(76,175,80,.6); }
 
-  /* ── Layout ── */
-  .main { padding: 28px 40px 40px; }
-  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 28px; }
-  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; margin-bottom: 28px; }
-  .row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
-  .row-3col-bias { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 22px; margin-bottom: 28px; }
+/* ── Layout ── */
+.main { padding:26px 40px 44px; }
+.row-2  { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.row-3  { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:24px; }
+.row-4  { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-bottom:24px; }
+.row-5  { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
+.row-3b { display:grid; grid-template-columns:1fr 1fr 1.3fr; gap:20px; margin-bottom:24px; }
+.divider { border:none; border-top:1px solid #eef2f7; margin:22px 0 20px; }
 
-  /* ── Section headers ── */
-  .section-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-    margin-top: 8px;
-  }
-  .section-head h2 { font-size: 17px; font-weight: 700; color: #111827; }
-  .section-head .tag {
-    font-size: 11px;
-    font-weight: 600;
-    background: #e8f0fe;
-    color: #1565c0;
-    border-radius: 12px;
-    padding: 3px 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-  .divider { border: none; border-top: 1px solid #eef2f7; margin: 28px 0 24px; }
+/* ── Section heads ── */
+.section-head { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.section-head h2 { font-size:17px; font-weight:700; color:#111827; }
+.tag { font-size:10.5px; font-weight:700; background:#e8f0fe; color:#1565c0; border-radius:12px; padding:3px 10px; text-transform:uppercase; letter-spacing:.4px; }
+.tag.amber { background:#fff8e1; color:#e65100; }
+.tag.green { background:#e8f5e9; color:#2e7d32; }
+.tag.red   { background:#ffebee; color:#b71c1c; }
 
-  /* ── KPI Hero Cards ── */
-  .kpi-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 22px 24px;
-    border: 1px solid #e5eaf2;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    position: relative;
-    overflow: hidden;
-  }
-  .kpi-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    border-radius: 14px 14px 0 0;
-  }
-  .kpi-card.accent-blue::after { background: linear-gradient(90deg,#1565c0,#42a5f5); }
-  .kpi-card.accent-green::after { background: linear-gradient(90deg,#2e7d32,#66bb6a); }
-  .kpi-card.accent-purple::after { background: linear-gradient(90deg,#6a1b9a,#ab47bc); }
-  .kpi-card.accent-teal::after { background: linear-gradient(90deg,#00695c,#26a69a); }
-  .kpi-label { font-size: 10px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; line-height: 1.4; }
-  .kpi-value { font-size: clamp(14px, 1.6vw, 22px); font-weight: 900; line-height: 1.2; color: #111827; }
-  .kpi-value.good { color: #1b5e20; }
-  .kpi-meta { font-size: 12px; color: #9ca3af; margin-top: 8px; }
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    border-radius: 20px;
-    padding: 3px 10px;
-    margin-top: 10px;
-  }
-  .pill.pass { background: #e8f5e9; color: #2e7d32; }
-  .pill.warn { background: #fff8e1; color: #f57f17; }
-  .pill.fail { background: #ffebee; color: #b71c1c; }
+/* ── KPI cards ── */
+.kpi { background:#fff; border-radius:13px; padding:20px 22px; border:1px solid #e5eaf2; box-shadow:0 2px 8px rgba(0,0,0,.05); position:relative; overflow:hidden; }
+.kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:4px; border-radius:13px 13px 0 0; }
+.kpi.blue::after   { background:linear-gradient(90deg,#1565c0,#42a5f5); }
+.kpi.green::after  { background:linear-gradient(90deg,#2e7d32,#66bb6a); }
+.kpi.amber::after  { background:linear-gradient(90deg,#e65100,#ffa726); }
+.kpi.purple::after { background:linear-gradient(90deg,#6a1b9a,#ab47bc); }
+.kpi.teal::after   { background:linear-gradient(90deg,#00695c,#26a69a); }
+.kpi.red::after    { background:linear-gradient(90deg,#b71c1c,#ef5350); }
+.kpi-label { font-size:10px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+.kpi-val   { font-size:clamp(16px,1.8vw,26px); font-weight:900; color:#111827; line-height:1.15; }
+.kpi-val.good  { color:#1b5e20; }
+.kpi-val.amber { color:#e65100; }
+.kpi-val.bad   { color:#b71c1c; }
+.kpi-sub  { font-size:11px; color:#9ca3af; margin-top:6px; }
+.pill { display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; border-radius:20px; padding:3px 9px; margin-top:8px; }
+.pill.pass  { background:#e8f5e9; color:#2e7d32; }
+.pill.warn  { background:#fff8e1; color:#e65100; }
+.pill.fail  { background:#ffebee; color:#b71c1c; }
 
-  /* ── Success Measure Cards ── */
-  .measure-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 20px 24px;
-    border: 1px solid #e5eaf2;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .measure-name { font-size: 13px; color: #6b7280; font-weight: 500; margin-bottom: 4px; }
-  .measure-target { font-size: 15px; font-weight: 700; color: #111827; }
-  .measure-current { font-size: 22px; font-weight: 900; white-space: nowrap; }
-  .measure-current.good { color: #1b5e20; }
-  .measure-current.bad  { color: #b71c1c; }
-  .measure-status { font-size: 12px; font-weight: 700; margin-top: 3px; }
-  .measure-status.pass { color: #2e7d32; }
-  .measure-status.fail { color: #b71c1c; }
+/* ── Chart cards ── */
+.card { background:#fff; border-radius:13px; padding:22px 24px; border:1px solid #e5eaf2; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.card h3 { font-size:14px; font-weight:700; color:#111827; margin-bottom:3px; }
+.card p  { font-size:11.5px; color:#9ca3af; margin-bottom:16px; }
 
-  /* ── Chart Cards ── */
-  .chart-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 22px 24px;
-    border: 1px solid #e5eaf2;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  }
-  .chart-card h3 { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
-  .chart-card p { font-size: 11.5px; color: #9ca3af; margin-bottom: 18px; }
+/* ── Initiative cards ── */
+.init-card { background:#fff; border-radius:13px; padding:18px 20px; border:1px solid #e5eaf2; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.init-name { font-size:12px; font-weight:700; color:#111827; margin-bottom:6px; }
+.init-pct  { font-size:24px; font-weight:900; }
+.init-pct.green { color:#1b5e20; }
+.init-pct.amber { color:#e65100; }
+.init-bar  { height:6px; border-radius:3px; background:#e8ecf0; margin:8px 0 6px; overflow:hidden; }
+.init-bar-fill { height:100%; border-radius:3px; }
+.init-trend { font-size:11px; color:#6b7280; }
 
-  /* ── Level legend ── */
-  .level-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
-  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #6b7280; font-weight: 500; }
-  .leg-dot { width: 11px; height: 11px; border-radius: 3px; }
+/* ── BU Scorecard Table ── */
+.scorecard-table { width:100%; border-collapse:collapse; font-size:12.5px; }
+.scorecard-table th { background:#f8fafc; color:#6b7280; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; padding:10px 14px; text-align:left; border-bottom:2px solid #eef2f7; }
+.scorecard-table td { padding:10px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+.scorecard-table tr:last-child td { border-bottom:none; }
+.scorecard-table tr:hover td { background:#fafbfc; }
+.bu-name  { font-weight:700; color:#111827; }
+.bu-lead  { font-size:11px; color:#9ca3af; }
+.metric-val { font-weight:700; }
+.metric-val.good  { color:#1b5e20; }
+.metric-val.amber { color:#e65100; }
+.metric-val.bad   { color:#b71c1c; }
+.vs-target { font-size:10.5px; color:#9ca3af; }
+.status-chip { display:inline-flex; align-items:center; gap:3px; font-size:10.5px; font-weight:700; border-radius:10px; padding:2px 8px; }
+.status-chip.on    { background:#e8f5e9; color:#2e7d32; }
+.status-chip.warn  { background:#fff8e1; color:#e65100; }
+.status-chip.off   { background:#ffebee; color:#b71c1c; }
 
-  /* ── Correlation callout ── */
-  .callout {
-    background: linear-gradient(135deg, #e8f0fe 0%, #f0f7ff 100%);
-    border: 1px solid #c5d8fa;
-    border-left: 4px solid #1565c0;
-    border-radius: 10px;
-    padding: 16px 22px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-  .callout-icon { font-size: 22px; margin-top: 2px; }
-  .callout-title { font-size: 14px; font-weight: 700; color: #0d47a1; margin-bottom: 5px; }
-  .callout-body { font-size: 13px; color: #374151; line-height: 1.6; }
-  .callout-body strong { color: #0d47a1; }
+/* ── Callout ── */
+.callout { background:linear-gradient(135deg,#e8f0fe,#f0f7ff); border:1px solid #c5d8fa; border-left:4px solid #1565c0; border-radius:10px; padding:16px 22px; margin-bottom:24px; display:flex; gap:14px; }
+.callout-icon { font-size:22px; }
+.callout-title { font-size:14px; font-weight:700; color:#0d47a1; margin-bottom:5px; }
+.callout-body  { font-size:12.5px; color:#374151; line-height:1.65; }
+.callout-body strong { color:#0d47a1; }
 
-  /* ── Footer ── */
-  .footer {
-    background: #f8fafc;
-    border-top: 1px solid #eef2f7;
-    padding: 14px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: #9ca3af;
-  }
+/* ── Legend ── */
+.legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px; }
+.leg { display:flex; align-items:center; gap:5px; font-size:11px; color:#6b7280; font-weight:500; }
+.leg-dot { width:11px; height:11px; border-radius:3px; }
+
+/* ── Footer ── */
+.footer { background:#f8fafc; border-top:1px solid #eef2f7; padding:13px 40px; display:flex; justify-content:space-between; font-size:11.5px; color:#9ca3af; }
 </style>
 </head>
 <body>
 
-<!-- ═══════════ HEADER ═══════════ -->
+<!-- ═══ HEADER ═══ -->
 <div class="header">
-  <div class="header-left">
-    <h1>DevX Health &amp; Outcome Metrics</h1>
-    <p>Developer Experience Platform · Operations &amp; Maturity Dashboard · FY25</p>
+  <div>
+    <h1>FY25 Elevate Operational Excellence — Intuit</h1>
+    <p>Monthly Program Update · All Business Units · From: Sandeep Goyal</p>
   </div>
-  <div class="header-right">
-    <div class="badge green">● All Systems Operational</div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <div class="badge green">● 4 of 5 Priorities ≥95% Adopted</div>
     <div class="badge">Updated: May 27, 2026 · 09:42 AM PT</div>
   </div>
 </div>
 
 <div class="main">
 
-  <!-- ═══════════ AVAILABILITY KPIs ═══════════ -->
+  <!-- ═══ PROGRAM OVERVIEW ═══ -->
   <div class="section-head">
-    <h2>Availability &amp; Reliability</h2>
-    <span class="tag">Tier 1 &amp; Tier 2 Targets</span>
+    <h2>Program Overview</h2>
+    <span class="tag green">FY25 · Q1–Q3</span>
+  </div>
+  <div class="row-5">
+    <div class="kpi blue">
+      <div class="kpi-label">6-Pagers Completed</div>
+      <div class="kpi-val good">~90</div>
+      <div class="kpi-sub">PD Directors · All BUs</div>
+      <div class="pill pass">✓ On Track</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">BUs Covered</div>
+      <div class="kpi-val good">10</div>
+      <div class="kpi-sub">GBSG · CG · VEP · A2D · GTM · CTREC · Fintech · MC · CK · PDX</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Priorities at ≥95% Adoption</div>
+      <div class="kpi-val good">4 / 5</div>
+      <div class="kpi-sub">Tracing still in progress</div>
+      <div class="pill warn">⚠ Tracing lagging</div>
+    </div>
+    <div class="kpi teal">
+      <div class="kpi-label">Change Failure Rate</div>
+      <div class="kpi-val good">0.26%</div>
+      <div class="kpi-sub">647 of 244,772 releases · ↓ trend</div>
+      <div class="pill pass">↓ Healthy</div>
+    </div>
+    <div class="kpi blue">
+      <div class="kpi-label">6-Pagers Pending Final Signoff</div>
+      <div class="kpi-val amber">&lt;10%</div>
+      <div class="kpi-sub">CTO Staff signoff remaining</div>
+      <div class="pill warn">In Review</div>
+    </div>
   </div>
 
+  <!-- ═══ KEY OUTCOME METRICS ═══ -->
+  <div class="section-head">
+    <h2>Key Outcome Metrics</h2>
+    <span class="tag">FY25 Targets</span>
+  </div>
   <div class="row-4">
-    <div class="kpi-card accent-blue">
-      <div class="kpi-label">Tier 1 · Availability</div>
-      <div class="kpi-value good">99.9999%</div>
-      <div class="kpi-meta">Target: 99.9999% · Six Nines</div>
+    <div class="kpi blue">
+      <div class="kpi-label">Overall Availability Target</div>
+      <div class="kpi-val good">99.99%</div>
+      <div class="kpi-sub">Four Nines · Tier 1 &amp; Tier 2</div>
       <div class="pill pass">✓ On Target</div>
     </div>
-    <div class="kpi-card accent-blue">
-      <div class="kpi-label">Tier 2 · Availability</div>
-      <div class="kpi-value good">99.9999%</div>
-      <div class="kpi-meta">Target: 99.9999% · Six Nines</div>
-      <div class="pill pass">✓ On Target</div>
+    <div class="kpi amber">
+      <div class="kpi-label">Mean Time to Detect (MTTD)</div>
+      <div class="kpi-val amber">~7 min</div>
+      <div class="kpi-sub">Target: ≤5 min · Improving</div>
+      <div class="pill warn">↓ Trending to Target</div>
     </div>
-    <div class="kpi-card accent-green">
-      <div class="kpi-label">MTTD · Detect</div>
-      <div class="kpi-value good">4.2 mins</div>
-      <div class="kpi-meta">Target: &lt; 5 mins</div>
+    <div class="kpi green">
+      <div class="kpi-label">Mean Time to Recover (MTTR)</div>
+      <div class="kpi-val good">~29 min</div>
+      <div class="kpi-sub">Target: ≤40 min · Within SLO</div>
       <div class="pill pass">✓ Within SLO</div>
     </div>
-    <div class="kpi-card accent-teal">
-      <div class="kpi-label">MTTR · Recover</div>
-      <div class="kpi-value good">9.8 mins</div>
-      <div class="kpi-meta">Target: &lt; 10 mins</div>
-      <div class="pill pass">✓ Within SLO</div>
-    </div>
-  </div>
-
-  <!-- ═══════════ SUCCESS MEASURES ═══════════ -->
-  <div class="section-head">
-    <h2>Success Measures</h2>
-    <span class="tag">Current vs. Target</span>
-  </div>
-
-  <div class="row-3">
-    <div class="measure-card">
-      <div>
-        <div class="measure-name">Mean Time to Detect</div>
-        <div class="measure-target">Target: &lt; 5 mins</div>
-      </div>
-      <div style="text-align:right">
-        <div class="measure-current good">4.2 mins</div>
-        <div class="measure-status pass">✓ PASSING</div>
-      </div>
-    </div>
-    <div class="measure-card">
-      <div>
-        <div class="measure-name">Mean Time to Recover</div>
-        <div class="measure-target">Target: &lt; 10 mins</div>
-      </div>
-      <div style="text-align:right">
-        <div class="measure-current good">9.8 mins</div>
-        <div class="measure-status pass">✓ PASSING</div>
-      </div>
-    </div>
-    <div class="measure-card">
-      <div>
-        <div class="measure-name">P1 / P2 Incidents</div>
-        <div class="measure-target">Target: &lt; 10 per quarter</div>
-      </div>
-      <div style="text-align:right">
-        <div class="measure-current good">7</div>
-        <div class="measure-status pass">✓ PASSING</div>
-      </div>
+    <div class="kpi teal">
+      <div class="kpi-label">P1/P2 Incidents (Monthly)</div>
+      <div class="kpi-val good">13</div>
+      <div class="kpi-sub">↓ from 42 in Jul · 6-month trend</div>
+      <div class="pill pass">↓ −69% YTD</div>
     </div>
   </div>
 
   <hr class="divider">
 
-  <!-- ═══════════ SELF-SERVE MATURITY ═══════════ -->
+  <!-- ═══ PRIORITY INITIATIVE ADOPTION ═══ -->
   <div class="section-head">
-    <h2>Self-Serve Maturity (SSM) — Capability Levels</h2>
-    <span class="tag">10 Capabilities · 4 BUs</span>
+    <h2>Priority Initiative Adoption</h2>
+    <span class="tag">5 Programs · Target: ≥95% All BUs</span>
+  </div>
+  <div class="row-5">
+    <div class="init-card">
+      <div class="init-name">RUM-FCI</div>
+      <div class="init-pct green">~95%</div>
+      <div class="init-bar"><div class="init-bar-fill" style="width:95%;background:#2e7d32;"></div></div>
+      <div class="init-trend">⏫ User experience availability improving</div>
+    </div>
+    <div class="init-card">
+      <div class="init-name">Golden Signal</div>
+      <div class="init-pct green">~95%</div>
+      <div class="init-bar"><div class="init-bar-fill" style="width:95%;background:#1565c0;"></div></div>
+      <div class="init-trend">⏫ Service availability improving</div>
+    </div>
+    <div class="init-card">
+      <div class="init-name">Alert2Inc (A2I)</div>
+      <div class="init-pct green">~95%</div>
+      <div class="init-bar"><div class="init-bar-fill" style="width:95%;background:#6a1b9a;"></div></div>
+      <div class="init-trend">⏫ MTTD detection times improving</div>
+    </div>
+    <div class="init-card">
+      <div class="init-name">Progressive Delivery</div>
+      <div class="init-pct green">~95%</div>
+      <div class="init-bar"><div class="init-bar-fill" style="width:95%;background:#00695c;"></div></div>
+      <div class="init-trend">⏫ MTTR restore times improving</div>
+    </div>
+    <div class="init-card">
+      <div class="init-name">Tracing</div>
+      <div class="init-pct amber">~78%</div>
+      <div class="init-bar"><div class="init-bar-fill" style="width:78%;background:#e65100;"></div></div>
+      <div class="init-trend">⏬ E2E trace instrumentation lagging</div>
+    </div>
   </div>
 
-  <div class="row-2">
-    <!-- Level 5 Chart -->
-    <div class="chart-card">
-      <h3>Capabilities at Level 5 — Highest Maturity</h3>
-      <p>Number of BUs (out of 4) that have achieved Level 5 per capability</p>
-      <div style="position:relative;height:290px;">
-        <canvas id="level5Chart"></canvas>
-      </div>
-    </div>
-
-    <!-- BU Maturity Stacked -->
-    <div class="chart-card">
-      <h3>Maturity Distribution by Business Unit</h3>
-      <p>Number of capabilities at each maturity level — GBSG · CG · CTREC · VEP</p>
-      <div class="level-legend">
-        <div class="leg-item"><div class="leg-dot" style="background:#0a2463;"></div>Level 5</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#1565c0;"></div>Level 4</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#42a5f5;"></div>Level 3</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#90caf9;"></div>Level 2</div>
-        <div class="leg-item"><div class="leg-dot" style="background:#dbeafe;"></div>Level 1</div>
-      </div>
-      <div style="position:relative;height:248px;">
-        <canvas id="buMaturityChart"></canvas>
-      </div>
+  <!-- Initiative Adoption by BU Chart -->
+  <div class="card" style="margin-bottom:24px;">
+    <h3>Priority Initiative Adoption by Business Unit</h3>
+    <p>% adoption across all 5 priority initiatives — RUM-FCI · Golden Signal · Alert2Inc · Progressive Delivery · Tracing</p>
+    <div style="position:relative;height:260px;">
+      <canvas id="adoptionChart"></canvas>
     </div>
   </div>
 
   <hr class="divider">
 
-  <!-- ═══════════ CORRELATION CALLOUT ═══════════ -->
+  <!-- ═══ BU SCORECARD ═══ -->
+  <div class="section-head">
+    <h2>Business Unit Scorecard</h2>
+    <span class="tag">MTTD · MTTR · Availability · Incidents</span>
+  </div>
+  <div class="card" style="margin-bottom:24px;padding:0;overflow:hidden;">
+    <table class="scorecard-table">
+      <thead>
+        <tr>
+          <th>Business Unit</th>
+          <th>Availability</th>
+          <th>MTTD (Current → Target)</th>
+          <th>MTTR (Current → Target)</th>
+          <th>P1/P2 (6 mo)</th>
+          <th>Key Highlight</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="bu-name">Fintech</div><div class="bu-lead">Gowri Sivaraman · James Barrese</div></td>
+          <td><span class="metric-val good">99.99%+</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val good">&lt;20m → &lt;20m</span></td>
+          <td><span class="metric-val good">&lt;20m → &lt;20m</span></td>
+          <td><span class="metric-val good">0 (peak)</span></td>
+          <td>100% A2I/FCI/GC/Argo · 4× incident reduction · 2.1B money movement</td>
+          <td><span class="status-chip on">✓ On Track</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">CTREC</div><div class="bu-lead">Erick Lee · Atticus Tysen</div></td>
+          <td><span class="metric-val good">100%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val good">&lt;10m → &lt;10m</span></td>
+          <td><span class="metric-val good">&lt;31m → &lt;31m</span></td>
+          <td><span class="metric-val good">4</span></td>
+          <td>100% T1/T2 A2I/GS/RUM/Argo · Web perf &gt;99% · 60% assets at 85%+ code coverage</td>
+          <td><span class="status-chip on">✓ On Track</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">A2D</div><div class="bu-lead">Arun Ragothaman · Ashok Srivastava</div></td>
+          <td><span class="metric-val good">&gt;5-nines</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val good">&lt;10m → &lt;10m</span></td>
+          <td><span class="metric-val good">&lt;20m → &lt;20m</span></td>
+          <td><span class="metric-val good">0 (peak)</span></td>
+          <td>98% A2I · 88% Tracing (▲21% YoY) · GenOS scaled to 600 TPS</td>
+          <td><span class="status-chip on">✓ On Track</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">GTM</div><div class="bu-lead">Harish Viswanathan · Saurabh Saxena</div></td>
+          <td><span class="metric-val good">99.99%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val good">&lt;5m → &lt;5m</span></td>
+          <td><span class="metric-val good">&lt;40m → &lt;40m</span></td>
+          <td><span class="metric-val good">↓ 56%</span></td>
+          <td>56% incident reduction · 46% quality improvement YoY · 100% T1/T2 tooling</td>
+          <td><span class="status-chip on">✓ On Track</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">GBSG</div><div class="bu-lead">Vishnu Mettapalli · Kashi Kakarla</div></td>
+          <td><span class="metric-val good">99.99%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val amber">8m → ~5m</span></td>
+          <td><span class="metric-val amber">~25m → ~20m</span></td>
+          <td><span class="metric-val good">↓ Trending</span></td>
+          <td>MTTD: 37m → 8m YoY · A2I invokes 70% of incidents · Game day 96% success</td>
+          <td><span class="status-chip warn">⚠ MTTD Near</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">VEP</div><div class="bu-lead">Tyler Vallillee · Shilpa Reddy</div></td>
+          <td><span class="metric-val good">99.99%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val amber">~12m → ~5m</span></td>
+          <td><span class="metric-val good">~30m → &lt;40m</span></td>
+          <td><span class="metric-val good">↓ Trending</span></td>
+          <td>10–15% less RTB · Defects/PR metric · AI pipeline for user story quality</td>
+          <td><span class="status-chip warn">⚠ MTTD Gap</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">Mailchimp</div><div class="bu-lead">Maura Kelly · Jack Tam</div></td>
+          <td><span class="metric-val amber">99.93%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val good">5m → 5m</span></td>
+          <td><span class="metric-val bad">71m → 21m</span></td>
+          <td><span class="metric-val good">↓ 68% (peak)</span></td>
+          <td>MTTD at goal · MTTR significantly above target · Availability 6bp below goal</td>
+          <td><span class="status-chip warn">⚠ MTTR Gap</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">Credit Karma</div><div class="bu-lead">Paul Jauregui · Wan Agus</div></td>
+          <td><span class="metric-val good">99.995%</span><br><span class="vs-target">Target: 99.95%</span></td>
+          <td><span class="metric-val bad">36m → 28m</span></td>
+          <td><span class="metric-val bad">175m → 140m</span></td>
+          <td><span class="metric-val amber">↓ Slow</span></td>
+          <td>Data quality incidents skewing MTTD/MTTR · Desired target: MTTD 8m / MTTR 21m</td>
+          <td><span class="status-chip off">✗ Off Track</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">CG</div><div class="bu-lead">Bob Nilsen</div></td>
+          <td><span class="metric-val good">99.99%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val amber">~10m → ~5m</span></td>
+          <td><span class="metric-val good">~35m → &lt;40m</span></td>
+          <td><span class="metric-val good">↓ Trending</span></td>
+          <td>CX3 exec dashboards 3.5 hrs ahead of SLA 49/50 days · Data quality warroom active</td>
+          <td><span class="status-chip warn">⚠ MTTD Gap</span></td>
+        </tr>
+        <tr>
+          <td><div class="bu-name">PDX</div><div class="bu-lead">Balaji Arunachalam · Chris Kasten</div></td>
+          <td><span class="metric-val good">99.99%</span><br><span class="vs-target">Target: 99.99%</span></td>
+          <td><span class="metric-val amber">~12m → ~5m</span></td>
+          <td><span class="metric-val good">~38m → &lt;40m</span></td>
+          <td><span class="metric-val good">↓ Trending</span></td>
+          <td>6-pagers complete · CTO staff signoff in progress</td>
+          <td><span class="status-chip warn">⚠ MTTD Gap</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══ CORRELATION CALLOUT ═══ -->
   <div class="callout">
     <div class="callout-icon">📊</div>
     <div>
-      <div class="callout-title">Key Insight — Correlation &amp; Causation: MTTD / MTTR → Availability</div>
+      <div class="callout-title">Key Insight — MTTD / MTTR Reduction Drives Availability: Correlation &amp; Causation</div>
       <div class="callout-body">
-        Analysis of FY25 operational data shows a <strong>direct causal relationship</strong> between incident response speed and availability outcomes.
-        MTTD improved from <strong>18 mins → 4.2 mins (−77%)</strong> and MTTR from <strong>45 mins → 9.8 mins (−78%)</strong> over the same period that Tier 1 availability
-        moved from <strong>99.95% → 99.9999%</strong>. The live dashboard below surfaces this correlation in real time, giving engineering and platform leadership
-        the evidence base to confidently drive toward 4 9's availability goals.
+        FY25 data surfaces a clear causal link between priority initiative adoption and outcome improvements.
+        <strong>GBSG: MTTD dropped from 37 min → 8 min YoY</strong> after A2I adoption reached 70%, driving Alert2Inc to invoke 70% of incidents automatically.
+        <strong>Fintech: 0 P0–P2 incidents during peak season</strong> with 100% A2I/FCI/Argo adoption and 4× incident reduction.
+        <strong>Overall: 647 incidents across 244,772 releases (0.26% change failure rate)</strong> — healthy downward trend.
+        Mailchimp and Credit Karma remain the focus areas — MTTR at 71m and 175m vs. targets of 21m and 140m respectively.
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ MTTD / MTTR / AVAILABILITY TRENDS ═══════════ -->
+  <!-- ═══ OPERATIONAL TRENDS ═══ -->
   <div class="section-head">
-    <h2>Operational Trends — MTTD, MTTR &amp; Availability</h2>
-    <span class="tag">FY25 Monthly · Jul → May</span>
+    <h2>Operational Trends</h2>
+    <span class="tag">FY25 Monthly · Jul 2024 → May 2025</span>
   </div>
 
-  <div class="row-3col-bias">
-    <!-- MTTD Trend -->
-    <div class="chart-card">
+  <div class="row-3b">
+    <div class="card">
       <h3>MTTD Trend</h3>
-      <p>Mean Time to Detect · Monthly avg (minutes)</p>
-      <div style="position:relative;height:230px;">
-        <canvas id="mttdChart"></canvas>
-      </div>
+      <p>Mean Time to Detect · Monthly avg (mins) · Target: ≤5 min</p>
+      <div style="position:relative;height:220px;"><canvas id="mttdChart"></canvas></div>
     </div>
-
-    <!-- MTTR Trend -->
-    <div class="chart-card">
+    <div class="card">
       <h3>MTTR Trend</h3>
-      <p>Mean Time to Recover · Monthly avg (minutes)</p>
-      <div style="position:relative;height:230px;">
-        <canvas id="mttrChart"></canvas>
-      </div>
+      <p>Mean Time to Recover · Monthly avg (mins) · Target: ≤40 min</p>
+      <div style="position:relative;height:220px;"><canvas id="mttrChart"></canvas></div>
     </div>
-
-    <!-- Availability Trend (dual-axis) -->
-    <div class="chart-card">
-      <h3>Availability Trend — Tier 1 &amp; Tier 2</h3>
-      <p>Service availability % · as MTTD &amp; MTTR improved</p>
-      <div style="position:relative;height:230px;">
-        <canvas id="availChart"></canvas>
-      </div>
+    <div class="card">
+      <h3>P1/P2 Incidents &amp; Change Failure Rate</h3>
+      <p>Monthly incident count (bar) · Change failure rate % (line)</p>
+      <div style="position:relative;height:220px;"><canvas id="incidentChart"></canvas></div>
     </div>
   </div>
 
-  <!-- ═══════════ COMBINED CORRELATION CHART ═══════════ -->
-  <div class="chart-card" style="margin-bottom:28px;">
-    <h3>Correlation View — MTTD Reduction vs. Availability Improvement (Dual Axis)</h3>
-    <p>As MTTD and MTTR decreased month over month, Tier 1 availability climbed toward the 99.9999% target — showing clear causal linkage</p>
-    <div style="position:relative;height:260px;">
-      <canvas id="correlationChart"></canvas>
+  <!-- Availability + Correlation -->
+  <div class="row-2">
+    <div class="card">
+      <h3>Service Availability Trend</h3>
+      <p>Overall Tier 1 &amp; Tier 2 service availability % · Target: 99.99%</p>
+      <div style="position:relative;height:220px;"><canvas id="availChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Correlation View — MTTD Reduction vs. Availability (Dual Axis)</h3>
+      <p>MTTD down + MTTR down → availability up · causal linkage across FY25</p>
+      <div style="position:relative;height:220px;"><canvas id="correlationChart"></canvas></div>
     </div>
   </div>
 
 </div>
 
-<!-- ═══════════ FOOTER ═══════════ -->
+<!-- ═══ FOOTER ═══ -->
 <div class="footer">
-  <div>DevX Health &amp; Outcome Metrics · Developer Experience PMO · Intuit</div>
-  <div>Mock dashboard — FY25 MY · Data as of May 27, 2026</div>
+  <div>FY25 Elevate Operational Excellence · DevX PMO · Intuit · From: Sandeep Goyal</div>
+  <div>Recipients: CTO Staff · SVPs · VPs · Eng Dirs · TPM Dirs · Mock Dashboard — May 27, 2026</div>
 </div>
 
-<!-- ═══════════ CHARTS JS ═══════════ -->
+<!-- ═══ CHARTS ═══ -->
 <script>
 const months = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
-
-const mttdData  = [18, 16, 14, 12, 10, 9, 7.5, 6.8, 5.5, 4.8, 4.2];
-const mttrData  = [45, 40, 36, 30, 26, 22, 18, 15, 12, 10.5, 9.8];
-const avail1Data = [99.950, 99.960, 99.970, 99.975, 99.980, 99.990, 99.995, 99.998, 99.9990, 99.9995, 99.9999];
-const avail2Data = [99.900, 99.920, 99.940, 99.950, 99.960, 99.970, 99.980, 99.990, 99.9950, 99.9980, 99.9999];
-
 const gridColor = '#f0f4f8';
-const axisTick  = { font: { size: 10 }, color: '#9ca3af' };
+const ticks = { font:{ size:10 }, color:'#9ca3af' };
 
-// ── Level 5 Capabilities ──
-new Chart(document.getElementById('level5Chart'), {
+const mttdData    = [28, 25, 22, 20, 17, 15, 13, 11,  9,  8,  7];
+const mttrData    = [75, 68, 62, 55, 50, 45, 40, 38, 35, 32, 29];
+const avail1      = [99.950, 99.960, 99.970, 99.975, 99.980, 99.985, 99.990, 99.992, 99.995, 99.997, 99.990];
+const incidentCnt = [42, 38, 35, 32, 28, 25, 22, 19, 17, 15, 13];
+const cfrData     = [0.48, 0.44, 0.40, 0.36, 0.33, 0.31, 0.29, 0.28, 0.27, 0.26, 0.26];
+
+// ── Initiative Adoption by BU ──
+new Chart(document.getElementById('adoptionChart'), {
   type: 'bar',
   data: {
-    labels: [
-      'Observability & Monitoring',
-      'CI/CD Automation',
-      'Security & Compliance',
-      'Code Quality & Testing',
-      'Dev Environment',
-      'Progressive Delivery',
-      'Incident Management',
-      'Performance Engineering',
-      'Platform Reliability',
-      'Documentation & Runbooks'
-    ],
-    datasets: [{
-      label: 'BUs at Level 5',
-      data: [4, 4, 4, 3, 3, 2, 2, 1, 1, 0],
-      backgroundColor: (ctx) => {
-        const v = ctx.raw;
-        if (v === 4) return '#0a2463';
-        if (v === 3) return '#1565c0';
-        if (v === 2) return '#42a5f5';
-        if (v === 1) return '#90caf9';
-        return '#e3f2fd';
-      },
-      borderRadius: 6,
-    }]
-  },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: ctx => ` ${ctx.raw} of 4 BUs at Level 5`
-        }
-      }
-    },
-    scales: {
-      x: {
-        max: 4,
-        ticks: { ...axisTick, stepSize: 1, callback: v => `${v}/4 BUs` },
-        grid: { color: gridColor }
-      },
-      y: { grid: { display: false }, ticks: { font: { size: 10.5 }, color: '#374151' } }
-    }
-  }
-});
-
-// ── BU Maturity Stacked ──
-new Chart(document.getElementById('buMaturityChart'), {
-  type: 'bar',
-  data: {
-    labels: ['GBSG', 'CG', 'CTREC', 'VEP'],
+    labels: ['Fintech','CTREC','A2D','GTM','GBSG','VEP','CG','PDX','Mailchimp','Credit Karma'],
     datasets: [
-      { label: 'Level 5', data: [4, 3, 2, 5], backgroundColor: '#0a2463' },
-      { label: 'Level 4', data: [2, 3, 2, 2], backgroundColor: '#1565c0' },
-      { label: 'Level 3', data: [2, 2, 3, 2], backgroundColor: '#42a5f5' },
-      { label: 'Level 2', data: [1, 1, 2, 1], backgroundColor: '#90caf9' },
-      { label: 'Level 1', data: [1, 1, 1, 0], backgroundColor: '#dbeafe' },
+      { label:'RUM-FCI',           data:[100,100,100,100, 95, 90, 90, 88, 85, 80], backgroundColor:'#1565c0' },
+      { label:'Golden Signal',     data:[100, 93,100,100, 95, 90, 90, 87, 85, 75], backgroundColor:'#2e7d32' },
+      { label:'Alert2Inc (A2I)',   data:[100, 93, 98,100, 70, 85, 88, 86, 80, 70], backgroundColor:'#6a1b9a' },
+      { label:'Progressive Del.',  data:[100,100,100,100, 90, 90, 88, 85, 80, 75], backgroundColor:'#00695c' },
+      { label:'Tracing',           data:[100, 80, 88, 85, 75, 70, 72, 70, 60, 55], backgroundColor:'#e65100' },
     ]
   },
   options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false }
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12, color:'#374151' } }
     },
-    scales: {
-      x: { stacked: true, grid: { display: false }, ticks: { ...axisTick, font: { size: 12 } } },
-      y: { stacked: true, grid: { color: gridColor }, ticks: { ...axisTick, stepSize: 2 } }
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ font:{size:10}, color:'#374151' } },
+      y:{ grid:{ color:gridColor }, ticks:{ ...ticks, callback: v => v+'%' }, max:110 }
     }
   }
 });
 
-// ── MTTD Trend ──
+// ── MTTD ──
 new Chart(document.getElementById('mttdChart'), {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      {
-        label: 'MTTD (mins)',
-        data: mttdData,
-        borderColor: '#1565c0',
-        backgroundColor: 'rgba(21,101,192,0.08)',
-        fill: true, tension: 0.4,
-        pointBackgroundColor: '#1565c0', pointRadius: 4, pointHoverRadius: 6,
-        borderWidth: 2
-      },
-      {
-        label: 'Target: 5 mins',
-        data: Array(11).fill(5),
-        borderColor: '#2e7d32', borderDash: [6,3],
-        pointRadius: 0, fill: false, borderWidth: 1.5
-      }
+  type:'line',
+  data:{
+    labels:months,
+    datasets:[
+      { label:'MTTD (mins)', data:mttdData, borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,.08)', fill:true, tension:.4, pointBackgroundColor:'#1565c0', pointRadius:4, borderWidth:2 },
+      { label:'Target: 5 min', data:Array(11).fill(5), borderColor:'#2e7d32', borderDash:[6,3], pointRadius:0, fill:false, borderWidth:1.5 }
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, color: '#6b7280' } } },
-    scales: {
-      x: { grid: { color: gridColor }, ticks: axisTick },
-      y: { grid: { color: gridColor }, ticks: { ...axisTick, callback: v => v + 'm' }, min: 0, max: 20 }
-    }
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } } },
+    scales:{ x:{ grid:{ color:gridColor }, ticks }, y:{ grid:{ color:gridColor }, ticks:{ ...ticks, callback: v=>v+'m' }, min:0, max:32 } }
   }
 });
 
-// ── MTTR Trend ──
+// ── MTTR ──
 new Chart(document.getElementById('mttrChart'), {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      {
-        label: 'MTTR (mins)',
-        data: mttrData,
-        borderColor: '#6a1b9a',
-        backgroundColor: 'rgba(106,27,154,0.07)',
-        fill: true, tension: 0.4,
-        pointBackgroundColor: '#6a1b9a', pointRadius: 4, pointHoverRadius: 6,
-        borderWidth: 2
-      },
-      {
-        label: 'Target: 10 mins',
-        data: Array(11).fill(10),
-        borderColor: '#2e7d32', borderDash: [6,3],
-        pointRadius: 0, fill: false, borderWidth: 1.5
-      }
+  type:'line',
+  data:{
+    labels:months,
+    datasets:[
+      { label:'MTTR (mins)', data:mttrData, borderColor:'#6a1b9a', backgroundColor:'rgba(106,27,154,.07)', fill:true, tension:.4, pointBackgroundColor:'#6a1b9a', pointRadius:4, borderWidth:2 },
+      { label:'Target: 40 min', data:Array(11).fill(40), borderColor:'#2e7d32', borderDash:[6,3], pointRadius:0, fill:false, borderWidth:1.5 }
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, color: '#6b7280' } } },
-    scales: {
-      x: { grid: { color: gridColor }, ticks: axisTick },
-      y: { grid: { color: gridColor }, ticks: { ...axisTick, callback: v => v + 'm' }, min: 0, max: 50 }
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } } },
+    scales:{ x:{ grid:{ color:gridColor }, ticks }, y:{ grid:{ color:gridColor }, ticks:{ ...ticks, callback: v=>v+'m' }, min:0, max:85 } }
+  }
+});
+
+// ── P1/P2 + CFR ──
+new Chart(document.getElementById('incidentChart'), {
+  type:'bar',
+  data:{
+    labels:months,
+    datasets:[
+      { label:'P1/P2 Count', data:incidentCnt, backgroundColor:'rgba(21,101,192,.65)', borderRadius:4, yAxisID:'yLeft' },
+      { label:'Change Failure Rate %', data:cfrData, type:'line', borderColor:'#e65100', backgroundColor:'transparent', tension:.4, pointBackgroundColor:'#e65100', pointRadius:3, borderWidth:2, yAxisID:'yRight' }
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } } },
+    scales:{
+      x:{ grid:{ display:false }, ticks },
+      yLeft:{ grid:{ color:gridColor }, ticks:{ ...ticks }, title:{ display:true, text:'Incidents', font:{size:9}, color:'#9ca3af' } },
+      yRight:{ position:'right', grid:{ drawOnChartArea:false }, ticks:{ ...ticks, callback: v=>v+'%' }, title:{ display:true, text:'CFR %', font:{size:9}, color:'#9ca3af' } }
     }
   }
 });
 
-// ── Availability Trend ──
+// ── Availability ──
 new Chart(document.getElementById('availChart'), {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      {
-        label: 'Tier 1',
-        data: avail1Data,
-        borderColor: '#1565c0',
-        backgroundColor: 'rgba(21,101,192,0.07)',
-        fill: true, tension: 0.4,
-        pointBackgroundColor: '#1565c0', pointRadius: 4, pointHoverRadius: 6,
-        borderWidth: 2
-      },
-      {
-        label: 'Tier 2',
-        data: avail2Data,
-        borderColor: '#e65100',
-        backgroundColor: 'transparent',
-        fill: false, tension: 0.4,
-        pointBackgroundColor: '#e65100', pointRadius: 4, pointHoverRadius: 6,
-        borderDash: [4,2], borderWidth: 2
-      },
-      {
-        label: 'Target: 99.9999%',
-        data: Array(11).fill(99.9999),
-        borderColor: '#2e7d32', borderDash: [6,3],
-        pointRadius: 0, fill: false, borderWidth: 1.5
-      }
+  type:'line',
+  data:{
+    labels:months,
+    datasets:[
+      { label:'Availability %', data:avail1, borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,.07)', fill:true, tension:.4, pointBackgroundColor:'#1565c0', pointRadius:4, borderWidth:2 },
+      { label:'Target: 99.99%', data:Array(11).fill(99.99), borderColor:'#2e7d32', borderDash:[6,3], pointRadius:0, fill:false, borderWidth:1.5 }
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, color: '#6b7280' } } },
-    scales: {
-      x: { grid: { color: gridColor }, ticks: axisTick },
-      y: {
-        grid: { color: gridColor },
-        ticks: { ...axisTick, callback: v => v.toFixed(2) + '%' },
-        min: 99.88, max: 100.00
-      }
-    }
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } } },
+    scales:{ x:{ grid:{ color:gridColor }, ticks }, y:{ grid:{ color:gridColor }, ticks:{ ...ticks, callback: v=>v.toFixed(2)+'%' }, min:99.92, max:100.01 } }
   }
 });
 
-// ── Correlation Chart (Dual Axis) ──
+// ── Correlation Dual Axis ──
 new Chart(document.getElementById('correlationChart'), {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      {
-        label: 'MTTD (mins) →',
-        data: mttdData,
-        borderColor: '#1565c0',
-        backgroundColor: 'rgba(21,101,192,0.06)',
-        fill: true, tension: 0.4,
-        pointBackgroundColor: '#1565c0', pointRadius: 4,
-        borderWidth: 2.5,
-        yAxisID: 'yLeft'
-      },
-      {
-        label: 'MTTR (mins) →',
-        data: mttrData,
-        borderColor: '#6a1b9a',
-        backgroundColor: 'transparent',
-        fill: false, tension: 0.4,
-        pointBackgroundColor: '#6a1b9a', pointRadius: 4,
-        borderWidth: 2.5, borderDash: [4,2],
-        yAxisID: 'yLeft'
-      },
-      {
-        label: 'Tier 1 Availability % →',
-        data: avail1Data,
-        borderColor: '#2e7d32',
-        backgroundColor: 'rgba(46,125,50,0.06)',
-        fill: true, tension: 0.4,
-        pointBackgroundColor: '#2e7d32', pointRadius: 4,
-        borderWidth: 2.5,
-        yAxisID: 'yRight'
-      }
+  type:'line',
+  data:{
+    labels:months,
+    datasets:[
+      { label:'MTTD (mins) →', data:mttdData, borderColor:'#1565c0', backgroundColor:'rgba(21,101,192,.06)', fill:true, tension:.4, pointBackgroundColor:'#1565c0', pointRadius:4, borderWidth:2.5, yAxisID:'yLeft' },
+      { label:'MTTR (mins) →', data:mttrData, borderColor:'#6a1b9a', backgroundColor:'transparent', fill:false, tension:.4, pointBackgroundColor:'#6a1b9a', pointRadius:4, borderWidth:2.5, borderDash:[4,2], yAxisID:'yLeft' },
+      { label:'Availability % →', data:avail1, borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,.06)', fill:true, tension:.4, pointBackgroundColor:'#2e7d32', pointRadius:4, borderWidth:2.5, yAxisID:'yRight' }
     ]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: {
-      legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 14, color: '#374151' } }
-    },
-    scales: {
-      x: { grid: { color: gridColor }, ticks: axisTick },
-      yLeft: {
-        type: 'linear', position: 'left',
-        grid: { color: gridColor },
-        ticks: { ...axisTick, callback: v => v + 'm' },
-        min: 0, max: 50,
-        title: { display: true, text: 'MTTD / MTTR (mins)', font: { size: 10 }, color: '#9ca3af' }
-      },
-      yRight: {
-        type: 'linear', position: 'right',
-        grid: { drawOnChartArea: false },
-        ticks: { ...axisTick, callback: v => v.toFixed(2) + '%' },
-        min: 99.88, max: 100.00,
-        title: { display: true, text: 'Availability %', font: { size: 10 }, color: '#9ca3af' }
-      }
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:12 } } },
+    scales:{
+      x:{ grid:{ color:gridColor }, ticks },
+      yLeft:{ type:'linear', position:'left', grid:{ color:gridColor }, ticks:{ ...ticks, callback: v=>v+'m' }, min:0, max:85, title:{ display:true, text:'MTTD / MTTR (mins)', font:{size:9}, color:'#9ca3af' } },
+      yRight:{ type:'linear', position:'right', grid:{ drawOnChartArea:false }, ticks:{ ...ticks, callback: v=>v.toFixed(2)+'%' }, min:99.92, max:100.01, title:{ display:true, text:'Availability %', font:{size:9}, color:'#9ca3af' } }
     }
   }
 });
 </script>
-
 </body>
 </html>
