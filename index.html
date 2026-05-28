@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevX Health & Outcome Metrics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; background: #ffffff; color: #111827; }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #0a2463 0%, #1565c0 60%, #1976d2 100%);
+    color: #fff;
+    padding: 22px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-left h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.4px; }
+  .header-left p { font-size: 13px; opacity: 0.75; margin-top: 3px; }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+  .badge {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .badge.green { background: rgba(46,125,50,0.55); border-color: rgba(76,175,80,0.6); }
+
+  /* ── Layout ── */
+  .main { padding: 28px 40px 40px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 28px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; margin-bottom: 28px; }
+  .row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+  .row-3col-bias { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 22px; margin-bottom: 28px; }
+
+  /* ── Section headers ── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    margin-top: 8px;
+  }
+  .section-head h2 { font-size: 17px; font-weight: 700; color: #111827; }
+  .section-head .tag {
+    font-size: 11px;
+    font-weight: 600;
+    background: #e8f0fe;
+    color: #1565c0;
+    border-radius: 12px;
+    padding: 3px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .divider { border: none; border-top: 1px solid #eef2f7; margin: 28px 0 24px; }
+
+  /* ── KPI Hero Cards ── */
+  .kpi-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    border: 1px solid #e5eaf2;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 14px 14px 0 0;
+  }
+  .kpi-card.accent-blue::after { background: linear-gradient(90deg,#1565c0,#42a5f5); }
+  .kpi-card.accent-green::after { background: linear-gradient(90deg,#2e7d32,#66bb6a); }
+  .kpi-card.accent-purple::after { background: linear-gradient(90deg,#6a1b9a,#ab47bc); }
+  .kpi-card.accent-teal::after { background: linear-gradient(90deg,#00695c,#26a69a); }
+  .kpi-label { font-size: 10px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; line-height: 1.4; }
+  .kpi-value { font-size: clamp(14px, 1.6vw, 22px); font-weight: 900; line-height: 1.2; color: #111827; }
+  .kpi-value.good { color: #1b5e20; }
+  .kpi-meta { font-size: 12px; color: #9ca3af; margin-top: 8px; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 3px 10px;
+    margin-top: 10px;
+  }
+  .pill.pass { background: #e8f5e9; color: #2e7d32; }
+  .pill.warn { background: #fff8e1; color: #f57f17; }
+  .pill.fail { background: #ffebee; color: #b71c1c; }
+
+  /* ── Success Measure Cards ── */
+  .measure-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 24px;
+    border: 1px solid #e5eaf2;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .measure-name { font-size: 13px; color: #6b7280; font-weight: 500; margin-bottom: 4px; }
+  .measure-target { font-size: 15px; font-weight: 700; color: #111827; }
+  .measure-current { font-size: 22px; font-weight: 900; white-space: nowrap; }
+  .measure-current.good { color: #1b5e20; }
+  .measure-current.bad  { color: #b71c1c; }
+  .measure-status { font-size: 12px; font-weight: 700; margin-top: 3px; }
+  .measure-status.pass { color: #2e7d32; }
+  .measure-status.fail { color: #b71c1c; }
+
+  /* ── Chart Cards ── */
+  .chart-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 22px 24px;
+    border: 1px solid #e5eaf2;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .chart-card h3 { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 3px; }
+  .chart-card p { font-size: 11.5px; color: #9ca3af; margin-bottom: 18px; }
+
+  /* ── Level legend ── */
+  .level-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #6b7280; font-weight: 500; }
+  .leg-dot { width: 11px; height: 11px; border-radius: 3px; }
+
+  /* ── Correlation callout ── */
+  .callout {
+    background: linear-gradient(135deg, #e8f0fe 0%, #f0f7ff 100%);
+    border: 1px solid #c5d8fa;
+    border-left: 4px solid #1565c0;
+    border-radius: 10px;
+    padding: 16px 22px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .callout-icon { font-size: 22px; margin-top: 2px; }
+  .callout-title { font-size: 14px; font-weight: 700; color: #0d47a1; margin-bottom: 5px; }
+  .callout-body { font-size: 13px; color: #374151; line-height: 1.6; }
+  .callout-body strong { color: #0d47a1; }
+
+  /* ── Footer ── */
+  .footer {
+    background: #f8fafc;
+    border-top: 1px solid #eef2f7;
+    padding: 14px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <div class="header-left">
+    <h1>DevX Health &amp; Outcome Metrics</h1>
+    <p>Developer Experience Platform · Operations &amp; Maturity Dashboard · FY25</p>
+  </div>
+  <div class="header-right">
+    <div class="badge green">● All Systems Operational</div>
+    <div class="badge">Updated: May 27, 2026 · 09:42 AM PT</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ═══════════ AVAILABILITY KPIs ═══════════ -->
+  <div class="section-head">
+    <h2>Availability &amp; Reliability</h2>
+    <span class="tag">Tier 1 &amp; Tier 2 Targets</span>
+  </div>
+
+  <div class="row-4">
+    <div class="kpi-card accent-blue">
+      <div class="kpi-label">Tier 1 · Availability</div>
+      <div class="kpi-value good">99.9999%</div>
+      <div class="kpi-meta">Target: 99.9999% · Six Nines</div>
+      <div class="pill pass">✓ On Target</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-label">Tier 2 · Availability</div>
+      <div class="kpi-value good">99.9999%</div>
+      <div class="kpi-meta">Target: 99.9999% · Six Nines</div>
+      <div class="pill pass">✓ On Target</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-label">MTTD · Detect</div>
+      <div class="kpi-value good">4.2 mins</div>
+      <div class="kpi-meta">Target: &lt; 5 mins</div>
+      <div class="pill pass">✓ Within SLO</div>
+    </div>
+    <div class="kpi-card accent-teal">
+      <div class="kpi-label">MTTR · Recover</div>
+      <div class="kpi-value good">9.8 mins</div>
+      <div class="kpi-meta">Target: &lt; 10 mins</div>
+      <div class="pill pass">✓ Within SLO</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SUCCESS MEASURES ═══════════ -->
+  <div class="section-head">
+    <h2>Success Measures</h2>
+    <span class="tag">Current vs. Target</span>
+  </div>
+
+  <div class="row-3">
+    <div class="measure-card">
+      <div>
+        <div class="measure-name">Mean Time to Detect</div>
+        <div class="measure-target">Target: &lt; 5 mins</div>
+      </div>
+      <div style="text-align:right">
+        <div class="measure-current good">4.2 mins</div>
+        <div class="measure-status pass">✓ PASSING</div>
+      </div>
+    </div>
+    <div class="measure-card">
+      <div>
+        <div class="measure-name">Mean Time to Recover</div>
+        <div class="measure-target">Target: &lt; 10 mins</div>
+      </div>
+      <div style="text-align:right">
+        <div class="measure-current good">9.8 mins</div>
+        <div class="measure-status pass">✓ PASSING</div>
+      </div>
+    </div>
+    <div class="measure-card">
+      <div>
+        <div class="measure-name">P1 / P2 Incidents</div>
+        <div class="measure-target">Target: &lt; 10 per quarter</div>
+      </div>
+      <div style="text-align:right">
+        <div class="measure-current good">7</div>
+        <div class="measure-status pass">✓ PASSING</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════ SELF-SERVE MATURITY ═══════════ -->
+  <div class="section-head">
+    <h2>Self-Serve Maturity (SSM) — Capability Levels</h2>
+    <span class="tag">10 Capabilities · 4 BUs</span>
+  </div>
+
+  <div class="row-2">
+    <!-- Level 5 Chart -->
+    <div class="chart-card">
+      <h3>Capabilities at Level 5 — Highest Maturity</h3>
+      <p>Number of BUs (out of 4) that have achieved Level 5 per capability</p>
+      <div style="position:relative;height:290px;">
+        <canvas id="level5Chart"></canvas>
+      </div>
+    </div>
+
+    <!-- BU Maturity Stacked -->
+    <div class="chart-card">
+      <h3>Maturity Distribution by Business Unit</h3>
+      <p>Number of capabilities at each maturity level — GBSG · CG · CTREC · VEP</p>
+      <div class="level-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#0a2463;"></div>Level 5</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#1565c0;"></div>Level 4</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#42a5f5;"></div>Level 3</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#90caf9;"></div>Level 2</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#dbeafe;"></div>Level 1</div>
+      </div>
+      <div style="position:relative;height:248px;">
+        <canvas id="buMaturityChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═══════════ CORRELATION CALLOUT ═══════════ -->
+  <div class="callout">
+    <div class="callout-icon">📊</div>
+    <div>
+      <div class="callout-title">Key Insight — Correlation &amp; Causation: MTTD / MTTR → Availability</div>
+      <div class="callout-body">
+        Analysis of FY25 operational data shows a <strong>direct causal relationship</strong> between incident response speed and availability outcomes.
+        MTTD improved from <strong>18 mins → 4.2 mins (−77%)</strong> and MTTR from <strong>45 mins → 9.8 mins (−78%)</strong> over the same period that Tier 1 availability
+        moved from <strong>99.95% → 99.9999%</strong>. The live dashboard below surfaces this correlation in real time, giving engineering and platform leadership
+        the evidence base to confidently drive toward 4 9's availability goals.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ MTTD / MTTR / AVAILABILITY TRENDS ═══════════ -->
+  <div class="section-head">
+    <h2>Operational Trends — MTTD, MTTR &amp; Availability</h2>
+    <span class="tag">FY25 Monthly · Jul → May</span>
+  </div>
+
+  <div class="row-3col-bias">
+    <!-- MTTD Trend -->
+    <div class="chart-card">
+      <h3>MTTD Trend</h3>
+      <p>Mean Time to Detect · Monthly avg (minutes)</p>
+      <div style="position:relative;height:230px;">
+        <canvas id="mttdChart"></canvas>
+      </div>
+    </div>
+
+    <!-- MTTR Trend -->
+    <div class="chart-card">
+      <h3>MTTR Trend</h3>
+      <p>Mean Time to Recover · Monthly avg (minutes)</p>
+      <div style="position:relative;height:230px;">
+        <canvas id="mttrChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Availability Trend (dual-axis) -->
+    <div class="chart-card">
+      <h3>Availability Trend — Tier 1 &amp; Tier 2</h3>
+      <p>Service availability % · as MTTD &amp; MTTR improved</p>
+      <div style="position:relative;height:230px;">
+        <canvas id="availChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ COMBINED CORRELATION CHART ═══════════ -->
+  <div class="chart-card" style="margin-bottom:28px;">
+    <h3>Correlation View — MTTD Reduction vs. Availability Improvement (Dual Axis)</h3>
+    <p>As MTTD and MTTR decreased month over month, Tier 1 availability climbed toward the 99.9999% target — showing clear causal linkage</p>
+    <div style="position:relative;height:260px;">
+      <canvas id="correlationChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<div class="footer">
+  <div>DevX Health &amp; Outcome Metrics · Developer Experience PMO · Intuit</div>
+  <div>Mock dashboard — FY25 MY · Data as of May 27, 2026</div>
+</div>
+
+<!-- ═══════════ CHARTS JS ═══════════ -->
+<script>
+const months = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'];
+
+const mttdData  = [18, 16, 14, 12, 10, 9, 7.5, 6.8, 5.5, 4.8, 4.2];
+const mttrData  = [45, 40, 36, 30, 26, 22, 18, 15, 12, 10.5, 9.8];
+const avail1Data = [99.950, 99.960, 99.970, 99.975, 99.980, 99.990, 99.995, 99.998, 99.9990, 99.9995, 99.9999];
+const avail2Data = [99.900, 99.920, 99.940, 99.950, 99.960, 99.970, 99.980, 99.990, 99.9950, 99.9980, 99.9999];
+
+const gridColor = '#f0f4f8';
+const axisTick  = { font: { size: 10 }, color: '#9ca3af' };
+
+// ── Level 5 Capabilities ──
+new Chart(document.getElementById('level5Chart'), {
+  type: 'bar',
+  data: {
+    labels: [
+      'Observability & Monitoring',
+      'CI/CD Automation',
+      'Security & Compliance',
+      'Code Quality & Testing',
+      'Dev Environment',
+      'Progressive Delivery',
+      'Incident Management',
+      'Performance Engineering',
+      'Platform Reliability',
+      'Documentation & Runbooks'
+    ],
+    datasets: [{
+      label: 'BUs at Level 5',
+      data: [4, 4, 4, 3, 3, 2, 2, 1, 1, 0],
+      backgroundColor: (ctx) => {
+        const v = ctx.raw;
+        if (v === 4) return '#0a2463';
+        if (v === 3) return '#1565c0';
+        if (v === 2) return '#42a5f5';
+        if (v === 1) return '#90caf9';
+        return '#e3f2fd';
+      },
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.raw} of 4 BUs at Level 5`
+        }
+      }
+    },
+    scales: {
+      x: {
+        max: 4,
+        ticks: { ...axisTick, stepSize: 1, callback: v => `${v}/4 BUs` },
+        grid: { color: gridColor }
+      },
+      y: { grid: { display: false }, ticks: { font: { size: 10.5 }, color: '#374151' } }
+    }
+  }
+});
+
+// ── BU Maturity Stacked ──
+new Chart(document.getElementById('buMaturityChart'), {
+  type: 'bar',
+  data: {
+    labels: ['GBSG', 'CG', 'CTREC', 'VEP'],
+    datasets: [
+      { label: 'Level 5', data: [4, 3, 2, 5], backgroundColor: '#0a2463' },
+      { label: 'Level 4', data: [2, 3, 2, 2], backgroundColor: '#1565c0' },
+      { label: 'Level 3', data: [2, 2, 3, 2], backgroundColor: '#42a5f5' },
+      { label: 'Level 2', data: [1, 1, 2, 1], backgroundColor: '#90caf9' },
+      { label: 'Level 1', data: [1, 1, 1, 0], backgroundColor: '#dbeafe' },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { ...axisTick, font: { size: 12 } } },
+      y: { stacked: true, grid: { color: gridColor }, ticks: { ...axisTick, stepSize: 2 } }
+    }
+  }
+});
+
+// ── MTTD Trend ──
+new Chart(document.getElementById('mttdChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'MTTD (mins)',
+        data: mttdData,
+        borderColor: '#1565c0',
+        backgroundColor: 'rgba(21,101,192,0.08)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#1565c0', pointRadius: 4, pointHoverRadius: 6,
+        borderWidth: 2
+      },
+      {
+        label: 'Target: 5 mins',
+        data: Array(11).fill(5),
+        borderColor: '#2e7d32', borderDash: [6,3],
+        pointRadius: 0, fill: false, borderWidth: 1.5
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, color: '#6b7280' } } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: axisTick },
+      y: { grid: { color: gridColor }, ticks: { ...axisTick, callback: v => v + 'm' }, min: 0, max: 20 }
+    }
+  }
+});
+
+// ── MTTR Trend ──
+new Chart(document.getElementById('mttrChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'MTTR (mins)',
+        data: mttrData,
+        borderColor: '#6a1b9a',
+        backgroundColor: 'rgba(106,27,154,0.07)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#6a1b9a', pointRadius: 4, pointHoverRadius: 6,
+        borderWidth: 2
+      },
+      {
+        label: 'Target: 10 mins',
+        data: Array(11).fill(10),
+        borderColor: '#2e7d32', borderDash: [6,3],
+        pointRadius: 0, fill: false, borderWidth: 1.5
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, color: '#6b7280' } } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: axisTick },
+      y: { grid: { color: gridColor }, ticks: { ...axisTick, callback: v => v + 'm' }, min: 0, max: 50 }
+    }
+  }
+});
+
+// ── Availability Trend ──
+new Chart(document.getElementById('availChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'Tier 1',
+        data: avail1Data,
+        borderColor: '#1565c0',
+        backgroundColor: 'rgba(21,101,192,0.07)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#1565c0', pointRadius: 4, pointHoverRadius: 6,
+        borderWidth: 2
+      },
+      {
+        label: 'Tier 2',
+        data: avail2Data,
+        borderColor: '#e65100',
+        backgroundColor: 'transparent',
+        fill: false, tension: 0.4,
+        pointBackgroundColor: '#e65100', pointRadius: 4, pointHoverRadius: 6,
+        borderDash: [4,2], borderWidth: 2
+      },
+      {
+        label: 'Target: 99.9999%',
+        data: Array(11).fill(99.9999),
+        borderColor: '#2e7d32', borderDash: [6,3],
+        pointRadius: 0, fill: false, borderWidth: 1.5
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 12, color: '#6b7280' } } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: axisTick },
+      y: {
+        grid: { color: gridColor },
+        ticks: { ...axisTick, callback: v => v.toFixed(2) + '%' },
+        min: 99.88, max: 100.00
+      }
+    }
+  }
+});
+
+// ── Correlation Chart (Dual Axis) ──
+new Chart(document.getElementById('correlationChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'MTTD (mins) →',
+        data: mttdData,
+        borderColor: '#1565c0',
+        backgroundColor: 'rgba(21,101,192,0.06)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#1565c0', pointRadius: 4,
+        borderWidth: 2.5,
+        yAxisID: 'yLeft'
+      },
+      {
+        label: 'MTTR (mins) →',
+        data: mttrData,
+        borderColor: '#6a1b9a',
+        backgroundColor: 'transparent',
+        fill: false, tension: 0.4,
+        pointBackgroundColor: '#6a1b9a', pointRadius: 4,
+        borderWidth: 2.5, borderDash: [4,2],
+        yAxisID: 'yLeft'
+      },
+      {
+        label: 'Tier 1 Availability % →',
+        data: avail1Data,
+        borderColor: '#2e7d32',
+        backgroundColor: 'rgba(46,125,50,0.06)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#2e7d32', pointRadius: 4,
+        borderWidth: 2.5,
+        yAxisID: 'yRight'
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 14, color: '#374151' } }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: axisTick },
+      yLeft: {
+        type: 'linear', position: 'left',
+        grid: { color: gridColor },
+        ticks: { ...axisTick, callback: v => v + 'm' },
+        min: 0, max: 50,
+        title: { display: true, text: 'MTTD / MTTR (mins)', font: { size: 10 }, color: '#9ca3af' }
+      },
+      yRight: {
+        type: 'linear', position: 'right',
+        grid: { drawOnChartArea: false },
+        ticks: { ...axisTick, callback: v => v.toFixed(2) + '%' },
+        min: 99.88, max: 100.00,
+        title: { display: true, text: 'Availability %', font: { size: 10 }, color: '#9ca3af' }
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
